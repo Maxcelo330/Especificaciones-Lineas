@@ -30,6 +30,7 @@ header small{display:block;font-weight:400;opacity:.92;font-size:.78rem;margin-t
 .tarjeta{background:#fff;border:1px solid var(--borde);border-radius:16px;padding:16px;margin-bottom:14px;
   box-shadow:0 1px 4px rgba(0,0,0,.05)}
 .tarjeta h2{margin:0 0 4px;font-size:1.02rem;color:var(--rojo-osc);display:flex;align-items:center;gap:8px}
+.tarjeta h2::before{content:"";display:inline-block;width:4px;height:15px;background:var(--rojo);border-radius:2px;flex:none}
 .tarjeta .ayuda{font-size:.8rem;color:var(--gris);margin:0 0 12px}
 label{display:block;font-size:.8rem;font-weight:600;color:#444;margin:10px 0 4px}
 select,input[type=text]{width:100%;padding:12px;border:1.5px solid var(--borde);border-radius:12px;
@@ -61,9 +62,10 @@ select:focus,input:focus{border-color:var(--rojo)}
   display:flex;z-index:60;box-shadow:0 -2px 12px rgba(0,0,0,.08);padding-bottom:env(safe-area-inset-bottom)}
 .tabs button{flex:1;border:0;background:none;padding:10px 4px 12px;font-size:.78rem;color:var(--gris);
   font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px}
-.tabs button .ic{font-size:1.35rem;line-height:1}
+.tabs button .ic{line-height:1;display:flex}
+.tabs button .ic svg{width:22px;height:22px;transition:transform .15s ease}
 .tabs button.activa{color:var(--rojo)}
-.tabs button.activa .ic{transform:scale(1.12)}
+.tabs button.activa .ic svg{transform:scale(1.12)}
 .seccion{display:none}
 .seccion.activa{display:block;animation:ap .18s ease}
 @keyframes ap{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
@@ -91,6 +93,11 @@ footer{margin-top:18px;text-align:center;font-size:.72rem;color:var(--gris)}
 .btn-limpiar{margin-top:12px;width:100%;padding:11px;border:1.5px solid var(--borde);background:#fff;
   color:var(--gris);border-radius:12px;font-size:.9rem;font-weight:600;cursor:pointer}
 .btn-limpiar:active{background:var(--gris-claro)}
+.campo-signo{display:flex;gap:6px}
+.campo-signo input{flex:1;min-width:0}
+.btn-signo{width:52px;flex:none;border:1.5px solid var(--borde);border-radius:12px;background:#fff;
+  font-size:1rem;font-weight:800;color:var(--rojo-osc);cursor:pointer}
+.btn-signo:active{background:var(--rojo-claro)}
 @media(min-width:700px){ .contenedor{padding-top:20px} .resultado .valor{font-size:2.8rem} }
 </style>
 </head>
@@ -108,7 +115,7 @@ footer{margin-top:18px;text-align:center;font-size:.72rem;color:var(--gris)}
 
   <!-- SELECTOR GLOBAL DE PRODUCTO -->
   <div class="tarjeta" id="cardProducto">
-    <h2>🥤 Producto en línea</h2>
+    <h2>Producto en línea</h2>
     <p class="ayuda">Elige el producto que estás analizando. Todos los cálculos y verificaciones usarán sus especificaciones (LP-AC-E-01.11 · Rev. 54).</p>
     <div class="fila">
       <div>
@@ -130,7 +137,7 @@ footer{margin-top:18px;text-align:center;font-size:.72rem;color:var(--gris)}
   <!-- ══════════ PESTAÑA CO2 ══════════ -->
   <div class="seccion" id="sec-co2">
     <div class="tarjeta">
-      <h2>💨 Volumen de CO₂</h2>
+      <h2>Volumen de CO₂</h2>
       <p class="ayuda">Ingresa la presión y la temperatura medidas en el equipo. La app calcula los volúmenes de CO₂ con la misma fórmula del documento de referencia.</p>
       <div class="fila">
         <div>
@@ -159,18 +166,24 @@ footer{margin-top:18px;text-align:center;font-size:.72rem;color:var(--gris)}
       </div>
 
       <details class="ajustes" id="ajustesCO2">
-        <summary>⚙️ Ajustes del equipo (correcciones)</summary>
+        <summary>Ajustes del equipo (correcciones)</summary>
         <div class="fila">
           <div>
             <label>Corrección P</label>
-            <input type="text" inputmode="decimal" id="inCorrP">
+            <div class="campo-signo">
+              <button type="button" class="btn-signo" onclick="cambiarSigno('inCorrP','corrP')" title="Cambiar signo">+/−</button>
+              <input type="text" inputmode="decimal" id="inCorrP">
+            </div>
           </div>
           <div>
             <label>Corrección T</label>
-            <input type="text" inputmode="decimal" id="inCorrT">
+            <div class="campo-signo">
+              <button type="button" class="btn-signo" onclick="cambiarSigno('inCorrT','corrT')" title="Cambiar signo">+/−</button>
+              <input type="text" inputmode="decimal" id="inCorrT">
+            </div>
           </div>
         </div>
-        <p class="nota">Estos valores se aplican igual que en la planilla de referencia y quedan guardados aunque cierres la app. Valores por defecto: P = 0,06 · T = 0,08.</p>
+        <p class="nota">Las correcciones pueden ser positivas o negativas: escribe el número y usa el botón <b>+/−</b> para cambiar el signo. Se aplican igual que en la planilla de referencia y quedan guardadas aunque cierres la app. Valores por defecto: P = 0,06 · T = 0,08.</p>
       </details>
       <button class="btn-limpiar" onclick="limpiarCO2()">Limpiar mediciones</button>
     </div>
@@ -179,7 +192,7 @@ footer{margin-top:18px;text-align:center;font-size:.72rem;color:var(--gris)}
   <!-- ══════════ PESTAÑA BRIX DIRECTO ══════════ -->
   <div class="seccion" id="sec-brixdir">
     <div class="tarjeta">
-      <h2>📏 Verificación de °Brix</h2>
+      <h2>Verificación de °Brix</h2>
       <p class="ayuda">Súper simple: escribe el °Brix que mediste y la app te dice al instante si estás dentro de especificación.</p>
       <label>°Brix medido</label>
       <input type="text" inputmode="decimal" id="inBrixDir" placeholder="Ej: 10,37" style="font-size:1.5rem;text-align:center;font-weight:700">
@@ -197,7 +210,7 @@ footer{margin-top:18px;text-align:center;font-size:.72rem;color:var(--gris)}
           <div class="fondo"></div><div class="aguja" id="agujaBrixDir"></div>
         </div>
       </div>
-      <p class="nota">💡 Compara tu lectura directamente contra la especificación del producto elegido arriba. Si necesitas corregir por inversión del jarabe terminado, usa la pestaña <b>B. Trabajo</b>.</p>
+      <p class="nota">Compara tu lectura directamente contra la especificación del producto elegido arriba. Si necesitas corregir por inversión del jarabe terminado, usa la pestaña <b>B. Trabajo</b>.</p>
       <button class="btn-limpiar" onclick="limpiarBrixDir()">Limpiar medición</button>
     </div>
   </div>
@@ -205,9 +218,9 @@ footer{margin-top:18px;text-align:center;font-size:.72rem;color:var(--gris)}
   <!-- ══════════ PESTAÑA BRIX DE TRABAJO ══════════ -->
   <div class="seccion" id="sec-brix">
     <div class="tarjeta">
-      <h2>🧪 Brix de trabajo — Coca-Cola</h2>
+      <h2>Brix de trabajo — Coca-Cola</h2>
       <p class="ayuda">Solo para <b>Coca-Cola original</b> (único producto con Brix normalizado). Corrige el Brix objetivo según la inversión del jarabe terminado (J.T.): Brix de trabajo = Brix bebida + 0,2282 × (J.T. actual − J.T. fresco).</p>
-      <div id="avisoCC" style="display:none" class="nota">⚠️ <b>Este apartado aplica únicamente a Coca-Cola original.</b> Selecciónala arriba para usarlo.</div>
+      <div id="avisoCC" style="display:none" class="nota"><b>Este apartado aplica únicamente a Coca-Cola original.</b> Selecciónala arriba para usarlo.</div>
       <div class="fila">
         <div>
           <label>°Brix J.T. FRESCO</label>
@@ -231,7 +244,7 @@ footer{margin-top:18px;text-align:center;font-size:.72rem;color:var(--gris)}
     </div>
 
     <div class="tarjeta">
-      <h2>🔬 Verificar lectura del densímetro</h2>
+      <h2>Verificar lectura del densímetro</h2>
       <p class="ayuda">Ingresa el °Brix que te dio el densímetro. La app le resta la corrección Δ y compara el Brix normalizado contra la especificación del producto.</p>
       <label>°Brix Bebida DENSÍMETRO</label>
       <input type="text" inputmode="decimal" id="inDensimetro" placeholder="Ej: 10,45">
@@ -251,14 +264,14 @@ footer{margin-top:18px;text-align:center;font-size:.72rem;color:var(--gris)}
   <!-- ══════════ PESTAÑA ESPECIFICACIONES ══════════ -->
   <div class="seccion" id="sec-specs">
     <div class="tarjeta">
-      <h2>✅ Verificación rápida del producto</h2>
+      <h2>Verificación rápida del producto</h2>
       <p class="ayuda">Especificaciones completas del producto elegido. Escribe el valor medido en cada parámetro y la app te dice al instante si está dentro de especificación.</p>
       <div id="tablaVerif"></div>
     </div>
     <div class="tarjeta">
-      <h2>📖 Todas las especificaciones</h2>
+      <h2>Todas las especificaciones</h2>
       <p class="ayuda">Consulta rápida de todos los productos (LEI · Objetivo · LES).</p>
-      <div class="buscador"><input type="text" id="inBuscar" placeholder="🔍 Buscar producto o parámetro…"></div>
+      <div class="buscador"><input type="text" id="inBuscar" placeholder="Buscar producto o parámetro…"></div>
       <div id="listaSpecs"></div>
     </div>
   </div>
@@ -270,10 +283,10 @@ footer{margin-top:18px;text-align:center;font-size:.72rem;color:var(--gris)}
 </div>
 
 <nav class="tabs">
-  <button data-tab="co2"  id="tab-co2"><span class="ic">💨</span>CO₂</button>
-  <button data-tab="brixdir" id="tab-brixdir"><span class="ic">📏</span>° Brix</button>
-  <button data-tab="brix" id="tab-brix"><span class="ic">🧪</span>B. Trabajo</button>
-  <button data-tab="specs" id="tab-specs"><span class="ic">✅</span>Especs</button>
+  <button data-tab="co2"  id="tab-co2"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 16a8.5 8.5 0 1 0-17 0"/><path d="M12 14.5 15.5 10"/><circle cx="12" cy="15" r="1.5" fill="currentColor" stroke="none"/><path d="M5.5 19h13"/></svg></span>CO₂</button>
+  <button data-tab="brixdir" id="tab-brixdir"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5s5.5 6.2 5.5 10.3a5.5 5.5 0 0 1-11 0C6.5 9.7 12 3.5 12 3.5z"/><path d="M9.5 14.2a2.6 2.6 0 0 0 2.2 2.6"/></svg></span>° Brix</button>
+  <button data-tab="brix" id="tab-brix"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3h4"/><path d="M11 3v5.2L5.6 17.6A2 2 0 0 0 7.3 20.5h9.4a2 2 0 0 0 1.7-2.9L13 8.2V3"/><path d="M8.2 14.5h7.6"/></svg></span>B. Trabajo</button>
+  <button data-tab="specs" id="tab-specs"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V2.8h6V4"/><path d="M8.8 12.8l2 2 4-4"/><path d="M9 17.5h6"/></svg></span>Especs</button>
 </nav>
 
 <script>
@@ -391,7 +404,7 @@ function evaluar(v,lei,les){
 }
 function pintarEstado(el,est){
   if(est===null){el.innerHTML="";return;}
-  const map={ok:["est-ok","✔ DENTRO DE ESPECIFICACIÓN"],limite:["est-limite","⚠ DENTRO, PERO AL LÍMITE"],mal:["est-mal","✘ FUERA DE ESPECIFICACIÓN"]};
+  const map={ok:["est-ok","DENTRO DE ESPECIFICACIÓN"],limite:["est-limite","DENTRO, PERO AL LÍMITE"],mal:["est-mal","FUERA DE ESPECIFICACIÓN"]};
   el.innerHTML=`<span class="estado ${map[est][0]}">${map[est][1]}</span>`;
 }
 function barra(idBarra,idAguja,idLei,idLes,v,lei,les){
@@ -496,7 +509,7 @@ function refrescarVerif(){
     const est=evaluar(v,par.lei,par.les);
     const punto=est===null?"p-nd":est==="ok"?"p-ok":est==="limite"?"p-limite":"p-mal";
     html+=`<tr><td>${par.n}</td><td>${fx(par.lei)}</td><td><b>${fx(par.obj)}</b></td><td>${fx(par.les)}</td>
-      <td><input type="text" inputmode="decimal" data-par="${par.id}" value="${vals[par.id]||""}"></td>
+      <td><input type="text" inputmode="decimal" enterkeyhint="done" data-par="${par.id}" value="${vals[par.id]||""}"></td>
       <td><span class="punto ${punto}"></span></td></tr>`;
   });
   html+="</table>";
@@ -550,6 +563,13 @@ enlazar("inBrixDir","bd",refrescarBrixDir);
 $("inBrixBebida").value=S.brixBeb||"";
 $("inBrixBebida").oninput=()=>{S.brixBeb=$("inBrixBebida").value;S.brixBebAuto=num(S.brixBeb);refrescarBrix();guardar();};
 $("inBuscar").oninput=e=>refrescarLista(e.target.value);
+function cambiarSigno(id,campo){
+  const el=$(id); let v=el.value.trim();
+  if(!v){v="-";}
+  else if(v.startsWith("-")){v=v.slice(1);}
+  else{v="-"+v;}
+  el.value=v; S[campo]=v; refrescarCO2(); guardar();
+}
 function limpiarCO2(){S.p="";S.t="";$("inPresion").value="";$("inTemp").value="";refrescarCO2();guardar();}
 function limpiarBrixDir(){S.bd="";$("inBrixDir").value="";refrescarBrixDir();guardar();}
 function limpiarBrix(){S.jtF="";S.jtA="";S.dens="";$("inJTFresco").value="";$("inJTActual").value="";$("inDensimetro").value="";refrescarBrix();guardar();}
@@ -565,6 +585,14 @@ function pintarTab(){
   $("sec-"+S.tab).classList.add("activa");
   $("tab-"+S.tab).classList.add("activa");
 }
+
+/* ════════════════ TECLADO: Enter / Ir / Listo cierra el teclado ════════════════ */
+document.querySelectorAll("input").forEach(i=>i.setAttribute("enterkeyhint","done"));
+document.addEventListener("keydown",e=>{
+  if((e.key==="Enter"||e.key==="Go"||e.keyCode===13)&&e.target&&e.target.tagName==="INPUT"){
+    e.preventDefault(); e.target.blur();
+  }
+});
 
 /* ════════════════ ARRANQUE ════════════════ */
 iniciarSelectores();
