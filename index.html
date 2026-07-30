@@ -98,6 +98,21 @@ footer{margin-top:18px;text-align:center;font-size:.72rem;color:var(--gris)}
 .btn-signo{width:52px;flex:none;border:1.5px solid var(--borde);border-radius:12px;background:#fff;
   font-size:1rem;font-weight:800;color:var(--rojo-osc);cursor:pointer}
 .btn-signo:active{background:var(--rojo-claro)}
+.btn-info{margin-left:auto;padding:8px 16px;border-radius:99px;border:1.5px solid rgba(255,255,255,.75);
+  background:none;color:#fff;font-weight:700;font-size:.82rem;cursor:pointer;flex:none;letter-spacing:.3px}
+footer a{color:var(--rojo);font-weight:600;cursor:pointer;text-decoration:underline}
+.modal-fondo{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:100;display:none;align-items:flex-end;justify-content:center}
+.modal-fondo.visible{display:flex}
+.modal{background:#fff;border-radius:20px 20px 0 0;max-width:820px;width:100%;padding:20px 18px 30px;max-height:82vh;overflow:auto}
+.modal h3{color:var(--rojo-osc);margin:14px 0 8px;font-size:1rem}
+.modal h3:first-child{margin-top:0}
+.doc-item{border:1px solid var(--borde);border-left:4px solid var(--rojo);border-radius:10px;padding:10px 12px;margin-bottom:8px;font-size:.85rem;line-height:1.4}
+.doc-item b{display:block;color:var(--negro)}
+.doc-item span{color:var(--gris);font-size:.78rem}
+.paso{display:flex;gap:10px;align-items:baseline;font-size:.86rem;padding:5px 0}
+.paso b{color:var(--rojo);flex:none}
+.btn-cerrar{margin-top:14px;width:100%;padding:12px;border:0;background:var(--rojo);color:#fff;
+  border-radius:12px;font-size:.95rem;font-weight:700;cursor:pointer}
 @media(min-width:700px){ .contenedor{padding-top:20px} .resultado .valor{font-size:2.8rem} }
 </style>
 </head>
@@ -106,9 +121,10 @@ footer{margin-top:18px;text-align:center;font-size:.72rem;color:var(--gris)}
   <img src="icon-192.png" alt="Embol">
   <div>
     <h1>Carbonatación &amp; Brix
-      <small>Control de Calidad · Analistas de Línea · Embol S.A.</small>
+      <small>Analistas de Línea · Embol S.A.</small>
     </h1>
   </div>
+  <button class="btn-info" id="btnInfo" title="Documentos de referencia y guía de uso">Docs</button>
 </header>
 
 <div class="contenedor">
@@ -116,7 +132,6 @@ footer{margin-top:18px;text-align:center;font-size:.72rem;color:var(--gris)}
   <!-- SELECTOR GLOBAL DE PRODUCTO -->
   <div class="tarjeta" id="cardProducto">
     <h2>Producto en línea</h2>
-    <p class="ayuda">Elige el producto que estás analizando. Todos los cálculos y verificaciones usarán sus especificaciones (LP-AC-E-01.11 · Rev. 54).</p>
     <div class="fila">
       <div>
         <label>Categoría</label>
@@ -131,14 +146,12 @@ footer{margin-top:18px;text-align:center;font-size:.72rem;color:var(--gris)}
       <label>Empaque / Formato (para CO₂)</label>
       <select id="selEmpaque"></select>
     </div>
-    <div class="spec-linea" id="specResumen"></div>
   </div>
 
   <!-- ══════════ PESTAÑA CO2 ══════════ -->
   <div class="seccion" id="sec-co2">
     <div class="tarjeta">
       <h2>Volumen de CO₂</h2>
-      <p class="ayuda">Ingresa la presión y la temperatura medidas en el equipo. La app calcula los volúmenes de CO₂ con la misma fórmula del documento de referencia.</p>
       <div class="fila">
         <div>
           <label>Presión [psi]</label>
@@ -183,7 +196,7 @@ footer{margin-top:18px;text-align:center;font-size:.72rem;color:var(--gris)}
             </div>
           </div>
         </div>
-        <p class="nota">Las correcciones pueden ser positivas o negativas: escribe el número y usa el botón <b>+/−</b> para cambiar el signo. Se aplican igual que en la planilla de referencia y quedan guardadas aunque cierres la app. Valores por defecto: P = 0,06 · T = 0,08.</p>
+        <p class="nota">Usa <b>+/−</b> para el signo. Por defecto: P = 0,06 · T = 0,08.</p>
       </details>
       <button class="btn-limpiar" onclick="limpiarCO2()">Limpiar mediciones</button>
     </div>
@@ -193,7 +206,6 @@ footer{margin-top:18px;text-align:center;font-size:.72rem;color:var(--gris)}
   <div class="seccion" id="sec-brixdir">
     <div class="tarjeta">
       <h2>Verificación de °Brix</h2>
-      <p class="ayuda">Súper simple: escribe el °Brix que mediste y la app te dice al instante si estás dentro de especificación.</p>
       <label>°Brix medido</label>
       <input type="text" inputmode="decimal" id="inBrixDir" placeholder="Ej: 10,37" style="font-size:1.5rem;text-align:center;font-weight:700">
       <div class="resultado">
@@ -210,7 +222,6 @@ footer{margin-top:18px;text-align:center;font-size:.72rem;color:var(--gris)}
           <div class="fondo"></div><div class="aguja" id="agujaBrixDir"></div>
         </div>
       </div>
-      <p class="nota">Compara tu lectura directamente contra la especificación del producto elegido arriba. Si necesitas corregir por inversión del jarabe terminado, usa la pestaña <b>B. Trabajo</b>.</p>
       <button class="btn-limpiar" onclick="limpiarBrixDir()">Limpiar medición</button>
     </div>
   </div>
@@ -219,7 +230,7 @@ footer{margin-top:18px;text-align:center;font-size:.72rem;color:var(--gris)}
   <div class="seccion" id="sec-brix">
     <div class="tarjeta">
       <h2>Brix de trabajo — Coca-Cola</h2>
-      <p class="ayuda">Solo para <b>Coca-Cola original</b> (único producto con Brix normalizado). Corrige el Brix objetivo según la inversión del jarabe terminado (J.T.): Brix de trabajo = Brix bebida + 0,2282 × (J.T. actual − J.T. fresco).</p>
+      <p class="ayuda">Corrección por inversión del jarabe terminado (J.T.). Solo Coca-Cola original.</p>
       <div id="avisoCC" style="display:none" class="nota"><b>Este apartado aplica únicamente a Coca-Cola original.</b> Selecciónala arriba para usarlo.</div>
       <div class="fila">
         <div>
@@ -245,7 +256,6 @@ footer{margin-top:18px;text-align:center;font-size:.72rem;color:var(--gris)}
 
     <div class="tarjeta">
       <h2>Verificar lectura del densímetro</h2>
-      <p class="ayuda">Ingresa el °Brix que te dio el densímetro. La app le resta la corrección Δ y compara el Brix normalizado contra la especificación del producto.</p>
       <label>°Brix Bebida DENSÍMETRO</label>
       <input type="text" inputmode="decimal" id="inDensimetro" placeholder="Ej: 10,45">
       <div class="resultado">
@@ -261,31 +271,63 @@ footer{margin-top:18px;text-align:center;font-size:.72rem;color:var(--gris)}
     </div>
   </div>
 
+  <!-- ══════════ PESTAÑA OTROS PARÁMETROS (N2, O3, pH, acidez...) ══════════ -->
+  <div class="seccion" id="sec-otros">
+    <div id="contOtros"></div>
+  </div>
+
   <!-- ══════════ PESTAÑA ESPECIFICACIONES ══════════ -->
   <div class="seccion" id="sec-specs">
     <div class="tarjeta">
       <h2>Verificación rápida del producto</h2>
-      <p class="ayuda">Especificaciones completas del producto elegido. Escribe el valor medido en cada parámetro y la app te dice al instante si está dentro de especificación.</p>
       <div id="tablaVerif"></div>
     </div>
     <div class="tarjeta">
       <h2>Todas las especificaciones</h2>
-      <p class="ayuda">Consulta rápida de todos los productos (LEI · Objetivo · LES).</p>
+      <p class="ayuda">LEI · Objetivo · LES</p>
       <div class="buscador"><input type="text" id="inBuscar" placeholder="Buscar producto o parámetro…"></div>
       <div id="listaSpecs"></div>
     </div>
   </div>
 
-  <footer>
-    Especificaciones de Línea LP-AC-E-01.11 · Revisión N.° 54 · 14/04/2026<br>
-    Fórmulas de carbonatación y Brix según planilla "CARBONATACIÓN – BRIX CORREGIDO 2026"
-  </footer>
+  <footer>Embol S.A. · Control de Calidad<br><a id="lnkDocs">Ver documentos de referencia</a></footer>
+</div>
+
+<!-- ══════════ VENTANA DE INFORMACIÓN Y DOCUMENTOS ══════════ -->
+<div class="modal-fondo" id="modalInfo">
+  <div class="modal">
+    <h3>Documentos de referencia</h3>
+    <div class="doc-item">
+      <b>Especificaciones de Línea — LP-AC-E-01.11</b>
+      Límites LEI / Objetivo / LES de todos los productos.
+      <span>Revisión N.° 54 · 14/04/2026</span>
+    </div>
+    <div class="doc-item">
+      <b>Planilla "Carbonatación – Brix Corregido 2026"</b>
+      Fórmulas de volumen de CO₂ (presión y temperatura) y de Brix de trabajo por inversión del jarabe.
+    </div>
+    <h3>Cómo usar la app</h3>
+    <div class="paso"><b>1</b>Elige el producto y el empaque.</div>
+    <div class="paso"><b>2</b>Ingresa tus mediciones en la pestaña que corresponda.</div>
+    <div class="paso"><b>3</b>El color te dice el resultado: verde dentro, ámbar al límite, rojo fuera.</div>
+    <h3>Fórmulas aplicadas</h3>
+    <div class="doc-item">
+      <b>Brix de trabajo (solo Coca-Cola)</b>
+      Brix bebida + 0,2282 × (J.T. actual − J.T. fresco)
+    </div>
+    <div class="doc-item">
+      <b>Carbonatación [v/v]</b>
+      Cálculo a partir de presión [psi] y temperatura [°C] con las correcciones del equipo, idéntico a la planilla de referencia.
+    </div>
+    <button class="btn-cerrar" onclick="cerrarInfo()">Cerrar</button>
+  </div>
 </div>
 
 <nav class="tabs">
   <button data-tab="co2"  id="tab-co2"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 16a8.5 8.5 0 1 0-17 0"/><path d="M12 14.5 15.5 10"/><circle cx="12" cy="15" r="1.5" fill="currentColor" stroke="none"/><path d="M5.5 19h13"/></svg></span>CO₂</button>
   <button data-tab="brixdir" id="tab-brixdir"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5s5.5 6.2 5.5 10.3a5.5 5.5 0 0 1-11 0C6.5 9.7 12 3.5 12 3.5z"/><path d="M9.5 14.2a2.6 2.6 0 0 0 2.2 2.6"/></svg></span>° Brix</button>
   <button data-tab="brix" id="tab-brix"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3h4"/><path d="M11 3v5.2L5.6 17.6A2 2 0 0 0 7.3 20.5h9.4a2 2 0 0 0 1.7-2.9L13 8.2V3"/><path d="M8.2 14.5h7.6"/></svg></span>B. Trabajo</button>
+  <button data-tab="otros" id="tab-otros"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8.5" r="3.4"/><circle cx="16" cy="14.5" r="4.3"/><circle cx="8.8" cy="17.8" r="1.9"/></svg></span>N₂·O₃</button>
   <button data-tab="specs" id="tab-specs"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V2.8h6V4"/><path d="M8.8 12.8l2 2 4-4"/><path d="M9 17.5h6"/></svg></span>Especs</button>
 </nav>
 
@@ -443,14 +485,6 @@ $("selProducto").onchange=e=>{S.prod=e.target.value;S.pack=0;llenarEmpaques();gu
 $("selEmpaque").onchange=e=>{S.pack=+e.target.value;refrescarTodo();guardar();};
 
 /* ════════════════ REFRESCOS ════════════════ */
-function refrescarResumen(){
-  const p=prodActual(),c=packActual();
-  let html="";
-  if(c)html+=`<span>CO₂ [v/v]: <b>${fx(c.lei)} / ${fx(c.obj)} / ${fx(c.les)}</b></span>`;
-  if(p.brix)html+=`<span>${p.brix.label}: <b>${fx(p.brix.lei)} / ${fx(p.brix.obj)} / ${fx(p.brix.les)}</b></span>`;
-  if(!html)html="<span>Producto sin CO₂/Brix — ver pestaña Especs</span>";
-  $("specResumen").innerHTML=html;
-}
 function refrescarCO2(){
   const P=num(S.p),T=num(S.t),cP=num(S.corrP)||0,cT=num(S.corrT)||0,c=packActual();
   if(isNaN(P)||isNaN(T)){
@@ -492,6 +526,57 @@ function refrescarBrixDir(){
   if(b){pintarEstado($("estadoBrixDir"),evaluar(v,b.lei,b.les));barra("barraBrixDir","agujaBrixDir","bBdLei","bBdLes",v,b.lei,b.les);}
   else{$("estadoBrixDir").innerHTML='<span class="estado est-nd">Este producto no tiene especificación de Brix</span>';$("barraBrixDir").style.display="none";}
 }
+/* ══ Otros parámetros (Nitrógeno, Ozono, pH, Acidez, TDS...) con la misma UX que CO₂ ══ */
+function actualizarOtro(i){
+  const p=prodActual(),o=p.otros[i]; if(!o)return;
+  const el=$("inOtro"+i); if(!el)return;
+  const v=num(el.value);
+  $("valOtro"+i).textContent=isNaN(v)?"—":f2(v);
+  pintarEstado($("estOtro"+i),evaluar(v,o.lei,o.les));
+  barra("barraOtro"+i,"agujaOtro"+i,"bOLei"+i,"bOLes"+i,v,o.lei,o.les);
+}
+function refrescarOtros(){
+  const p=prodActual(),clave=p.cat+"|"+p.prod,cont=$("contOtros");
+  const vals=S.verif[clave]||{};
+  if(!p.otros.length){
+    $("tab-otros").style.display="none";cont.innerHTML="";
+    if(S.tab==="otros"){S.tab="co2";pintarTab();}
+    return;
+  }
+  $("tab-otros").style.display="flex";
+  cont.innerHTML=p.otros.map((o,i)=>`
+    <div class="tarjeta">
+      <h2>${o.n}</h2>
+      <label>Valor medido</label>
+      <input type="text" inputmode="decimal" enterkeyhint="done" id="inOtro${i}" value="${vals["otro"+i]||""}"
+        style="font-size:1.5rem;text-align:center;font-weight:700">
+      <div class="resultado">
+        <div class="etiq">${o.n} vs especificación</div>
+        <div class="valor" id="valOtro${i}">—</div>
+        <div class="res-sec">
+          <div class="mini"><b>${fx(o.lei)}</b><span>Mínimo (LEI)</span></div>
+          <div class="mini"><b>${fx(o.obj)}</b><span>Objetivo</span></div>
+          <div class="mini"><b>${fx(o.les)}</b><span>Máximo (LES)</span></div>
+        </div>
+        <div id="estOtro${i}"></div>
+        <div class="barra" id="barraOtro${i}" style="display:none">
+          <span class="lim" id="bOLei${i}"></span><span class="lim" id="bOLes${i}" style="right:0;transform:none"></span>
+          <div class="fondo"></div><div class="aguja" id="agujaOtro${i}"></div>
+        </div>
+      </div>
+    </div>`).join("");
+  p.otros.forEach((o,i)=>{
+    const el=$("inOtro"+i);
+    el.oninput=()=>{
+      if(!S.verif[clave])S.verif[clave]={};
+      S.verif[clave]["otro"+i]=el.value;guardar();
+      actualizarOtro(i);
+      const tv=$("tablaVerif").querySelector(`input[data-par="otro${i}"]`);
+      if(tv&&tv.value!==el.value){tv.value=el.value;tv.dispatchEvent(new Event("input"));}
+    };
+    actualizarOtro(i);
+  });
+}
 function parametrosDe(p){
   const lista=[];
   if(p.brix)lista.push({id:"brix",n:p.brix.label,lei:p.brix.lei,obj:p.brix.obj,les:p.brix.les});
@@ -520,6 +605,10 @@ function refrescarVerif(){
       const est=evaluar(num(inp.value),par.lei,par.les);
       const punto=inp.parentElement.nextElementSibling.querySelector(".punto");
       punto.className="punto "+(est===null?"p-nd":est==="ok"?"p-ok":est==="limite"?"p-limite":"p-mal");
+      if(inp.dataset.par.startsWith("otro")){
+        const i=+inp.dataset.par.slice(4),el=$("inOtro"+i);
+        if(el&&el.value!==inp.value){el.value=inp.value;actualizarOtro(i);}
+      }
     };
   });
 }
@@ -537,7 +626,7 @@ function refrescarLista(filtro=""){
   });
   $("listaSpecs").innerHTML=html||'<p class="nota">Sin resultados para esa búsqueda.</p>';
 }
-function refrescarTodo(){refrescarResumen();refrescarCO2();refrescarBrix();refrescarBrixDir();refrescarVerif();
+function refrescarTodo(){refrescarCO2();refrescarBrix();refrescarBrixDir();refrescarVerif();refrescarOtros();
   const p=prodActual();
   if(p.brix&&(S.brixBebAuto===undefined||S.brixBebAuto!==p.brix.obj)){
     S.brixBeb=String(p.brix.obj).replace(".",",");S.brixBebAuto=p.brix.obj;
@@ -585,6 +674,12 @@ function pintarTab(){
   $("sec-"+S.tab).classList.add("activa");
   $("tab-"+S.tab).classList.add("activa");
 }
+
+/* ════════════════ VENTANA DE INFORMACIÓN ════════════════ */
+$("btnInfo").onclick=()=>$("modalInfo").classList.add("visible");
+$("lnkDocs").onclick=()=>$("modalInfo").classList.add("visible");
+function cerrarInfo(){$("modalInfo").classList.remove("visible");}
+$("modalInfo").onclick=e=>{if(e.target.id==="modalInfo")cerrarInfo();};
 
 /* ════════════════ TECLADO: Enter / Ir / Listo cierra el teclado ════════════════ */
 document.querySelectorAll("input").forEach(i=>i.setAttribute("enterkeyhint","done"));
