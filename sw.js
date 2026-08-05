@@ -2,7 +2,7 @@
    Cache-first para los archivos propios (funciona 100 % offline).
    IMPORTANTE: sube el número de VERSION cada vez que modifiques la app. */
 
-const VERSION = 'carbo-v3';
+const VERSION = 'carbo-v4';
 
 const CORE = [
   './',
